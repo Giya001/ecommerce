@@ -1,5 +1,6 @@
 from django.urls import path, include
 from store import views
 urlpatterns = [
-    path('',views.home)
+    path('',views.category_list_or_create),
+    path('<int:pk>/',views.category_retrieve_update_or_delete),
 ]
