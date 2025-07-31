@@ -11,6 +11,9 @@ from store.serializer import CategorySerializer
 def category_list_or_create(request):
     if request.method == 'GET':
         categories = Category.objects.all()
+        search=request.query_params.get('search')
+        if search:
+            categories = categories.filter(name__icontains=search)
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
@@ -25,7 +28,7 @@ def category_retrieve_update_or_delete(request,pk):
     try:
         category = Category.objects.get(id=pk)
     except Category.DoesNotExist:
-        return Response({'message': 'Category does not exist'})
+        return Response({'message': 'Category does not exist'},status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         serializer = CategorySerializer(category)
         return Response(serializer.data)
@@ -37,6 +40,6 @@ def category_retrieve_update_or_delete(request,pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         category.delete()
-        return Response({'message': 'Category deleted'})
+        return Response({'message': 'Category deleted'},status=status.HTTP_204_NO_CONTENT)
     return None
 
